@@ -1,0 +1,218 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-8 col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <strong>Dados da Conta</strong>
+          <span [className]="getAccountStatusColor(currentAccount.accountStatus)">{{ currentAccount.accountStatus }}</span>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <strong for="name">Código:</strong> {{ currentAccount.code }}
+          </div>
+          <div class="form-group">
+            <strong for="name">Nome:</strong> {{ currentAccount.name }}
+          </div>
+          <div class="form-group">
+            <strong for="name">Email:</strong> {{ currentAccount.email }}
+          </div>
+          <div class="form-group">
+            <strong for="name">Endereço:</strong> {{ currentAccount.address }}
+          </div>
+          <div class="form-group">
+            <strong for="name">Telefone:</strong> {{ currentAccount.phoneNumber }}
+          </div>
+          <div class="form-group">
+            <strong for="name">CNPJ/CPF:</strong> {{ currentAccount.uid }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-8 col-md-6">
+      <div class="card">
+        <div class="card-header">
+          Configurações da Conta
+        </div>
+        <div class="card-body">
+          <div class="form-group row">
+            <label class="col-md-3 col-form-label">Usuários</label>
+            <div class="col-md-9 col-form-label">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="option1" id="checkbox1">
+                <label class="form-check-label" for="checkbox1">
+                  Deletar - Enviar para validação
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="option1" id="checkbox2">
+                <label class="form-check-label" for="checkbox2">
+                  Editar - Enviar para validação
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <strong>Usuários</strong>
+          <div class="card-header-actions" style="height: 21px;" >
+            <div class="col-6 col-sm-4 col-md mb-3 mb-xl-0 text-center">
+              <button type="button" class="btn btn-sm btn-square btn-ghost-success" (click)="openNewUserModal()">
+                <em class="fa fa-plus-circle"></em> Adicionar Usuário
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <table class="table table-bordered table-striped table-sm">
+            <caption>Clique no Usuário para ver mais detalhes e/ou editar</caption>
+            <thead>
+              <tr>
+                <th>Nome de Usuário</th>
+                <th>Nome Completo</th>
+                <th>Email</th>
+                <th>Função</th>
+                <th>Situação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of accountUsers; index as i" (click)="openUserEditing(user)" style="cursor: pointer">
+                <td>{{ user.username }}</td>
+                <td>{{ user.firstName }} {{ user.lastName }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role.label }}</td>
+                <td>{{ user.status }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #editUserModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Editar Usuário</h4>
+        <button type="button" class="close" (click)="closeUserEditing()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="editUserForm">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="username">Nome de Usuário</label>
+              <input type="text" formControlName="username" class="form-control" id="username" value="{{ editingUser.username }}">
+            </div>
+            <div class="form-group">
+              <label for="firstName">Nome</label>
+              <input type="text" formControlName="firstName" class="form-control" id="firstName" value="{{ editingUser.firstName }}">
+            </div>
+            <div class="form-group">
+              <label for="lastName">Sobrenome</label>
+              <input type="text" formControlName="lastName" class="form-control" id="lastName" value="{{ editingUser.lastName }}">
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-8">
+                <label for="usersRolesSelect">Função</label>
+                <div>
+                  <select id="usersRolesSelect" name="usersRolesSelect" class="form-control" formControlName="role">
+                    <option *ngFor="let userRole of allUsersRoles" [value]="editingUser.role.code">{{ userRole.label }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group col-sm-4">
+                <label for="status">Situação</label>
+                <input [readOnly]="true" type="text" formControlName="status" class="form-control" id="status" value="{{ editingUser.status }}">
+              </div>
+            </div><!--/.row-->
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="text" formControlName="email" class="form-control" id="email" value="{{ editingUser.email }}">
+            </div>
+          </div><!--/.col-->
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+          <button type="button" class="btn btn-square btn-block btn-secondary" (click)="closeUserEditing()"><i class="fa fa-times"></i> Cancelar</button>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+          <button type="button" class="btn btn-square btn-block btn-danger"><i class="fa fa-ban"></i> Desativar</button>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+          <button type="button" class="btn btn-square btn-block btn-success"><i class="fa fa-save"></i> Salvar</button>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div bsModal #newUserModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Adicionar Usuário</h4>
+        <button type="button" class="close" (click)="closeUserEditing()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="newUserForm">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="newUsername">Nome de Usuário</label>
+              <input type="text" formControlName="username" class="form-control" id="newUsername" value="{{ editingUser.username }}">
+            </div>
+            <div class="form-group">
+              <label for="newFirstName">Nome</label>
+              <input type="text" formControlName="firstName" class="form-control" id="newFirstName" value="{{ editingUser.firstName }}">
+            </div>
+            <div class="form-group">
+              <label for="newLastName">Sobrenome</label>
+              <input type="text" formControlName="lastName" class="form-control" id="newLastName" value="{{ editingUser.lastName }}">
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-8">
+                <label for="usersRolesSelect">Função</label>
+                <div>
+                  <select id="newUsersRolesSelect" name="usersRolesSelect" class="form-control" formControlName="role">
+                    <option *ngFor="let userRole of allUsersRoles"
+                            [defaultSelected]="editingUser.role"
+                            [value]="editingUser.role.code">
+                      {{ userRole.label }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group col-sm-4">
+                <label for="newStatus">Situação</label>
+                <input [readOnly]="true" type="text" formControlName="status" class="form-control" id="newStatus" value="{{ editingUser.status }}">
+              </div>
+            </div><!--/.row-->
+            <div class="form-group">
+              <label for="newEmail">Email</label>
+              <input type="text" formControlName="email" class="form-control" id="newEmail" value="{{ editingUser.email }}">
+            </div>
+          </div><!--/.col-->
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+          <button type="button" class="btn btn-square btn-block btn-secondary" (click)="closeNewUserModal()"><i class="fa fa-times"></i> Cancelar</button>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+          <button type="button" class="btn btn-square btn-block btn-success"><i class="fa fa-save"></i> Salvar</button>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
